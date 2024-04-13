@@ -33,6 +33,10 @@ android {
 
 dependencies {
 
+    implementation(libs.glide)
+    implementation(libs.logging)
+    implementation(libs.gson)
+    implementation(libs.retrofit)
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -40,4 +44,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+
+
 }

@@ -1,155 +1,100 @@
 package poly.manhnt.datn_md09.Views.LoginScreen;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
-import android.util.Base64;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import java.util.Arrays;
+import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.Objects;
+
+import poly.manhnt.datn_md09.DataManager;
+import poly.manhnt.datn_md09.Models.model_login.LoginRequest;
+import poly.manhnt.datn_md09.Models.model_login.LoginResponse;
 import poly.manhnt.datn_md09.R;
+import poly.manhnt.datn_md09.Views.HomeScreen.HomeActivity;
+import poly.manhnt.datn_md09.Views.RegisterScreen.RegisterActivity;
+import poly.manhnt.datn_md09.api.ApiService;
+import poly.manhnt.datn_md09.api.RetrofitClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
-    Toolbar toolbar;
-    Button btnLogin, btnLoginFb;
-    EditText edtPass;
-    EditText edtUsername;
-    ImageView imgClearUser, imgclearPass, imgEye;
-     boolean isPasswordVisible;
+public class LoginActivity extends AppCompatActivity {
+    private TextView tvLogin, tvSignUp;
+    private TextInputEditText edtUsername, edtPassword;
+
+    private String typeSuccess = "Đăng nhập thành công";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        toolbar = findViewById(R.id.toolbarLogin);
-        btnLogin = findViewById(R.id.btnLogin);
-        edtPass = findViewById(R.id.edtPassLogin);
-        edtUsername = findViewById(R.id.edtUsernameLogin);
-        imgEye = findViewById(R.id.imgEye);
-        imgclearPass = findViewById(R.id.imgClearPassLogin);
-        imgClearUser = findViewById(R.id.imgClearUserLogin);
-        btnLoginFb = findViewById(R.id.btnLoginFacebook);
 
-        btnLoginFb.setOnClickListener(this);
+        initViews();
+        initEvents();
+    }
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getWindow().setStatusBarColor(getResources().getColor(R.color.white));
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+    private void initViews() {
+        tvLogin = findViewById(R.id.tvLogin);
+        edtUsername = findViewById(R.id.edtUsername);
+        edtPassword = findViewById(R.id.edtPassword);
+        tvSignUp = findViewById(R.id.tvSignUp);
+    }
 
-        imgclearPass.setVisibility(View.GONE);
-        isPasswordVisible = false;
-        imgEye.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPass(isPasswordVisible);
-            }
-        });
-        edtPass.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().trim().length() > 0) {
-                    imgclearPass.setVisibility(View.VISIBLE);
-                } else {
-                    imgclearPass.setVisibility(View.GONE);
-                }
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
-        imgclearPass.setOnClickListener(new View.OnClickListener() {
+    private void initEvents() {
+        tvLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                edtPass.setText("");
+                loginUser();
             }
         });
-        edtUsername.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().trim().length() > 0) {
-                    imgClearUser.setVisibility(View.VISIBLE);
-                } else {
-                    imgClearUser.setVisibility(View.GONE);
-                }
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
-        imgClearUser.setOnClickListener(new View.OnClickListener() {
+
+        tvSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                edtUsername.setText("");
+                navigateRegisterScreen();
             }
         });
-        TextWatcher loginTextWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+    }
 
+    private void loginUser() {
+        //TODO MinhNTn fake login - xoa sau
+        navigateHomeScreen();
+
+        String username = Objects.requireNonNull(edtUsername.getText()).toString().trim();
+        String password = Objects.requireNonNull(edtPassword.getText()).toString().trim();
+
+        RetrofitClient.getInstance().create(ApiService.class).loginUser(new LoginRequest(username, password)).enqueue(new Callback<LoginResponse>() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                int usernameInput = edtUsername.getText().toString().trim().length();
-                int passwordInput = edtPass.getText().toString().trim().length();
-                if(usernameInput > 0 && passwordInput > 0) {
-                    btnLogin.setBackgroundColor(getResources().getColor(R.color.blue1));
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                if (response.body().msg.equals(typeSuccess)) {
+                    DataManager.getInstance().getUserLogin = response.body();
+                    navigateHomeScreen();
                 } else {
-                    btnLogin.setBackgroundColor(getResources().getColor(R.color.gray3));
+                    Toast.makeText(LoginActivity.this, response.body().msg, Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
-            public void afterTextChanged(Editable s) {}
-        };
-        edtUsername.addTextChangedListener(loginTextWatcher);
-        edtPass.addTextChangedListener(loginTextWatcher);
-
-
-
-    }
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-    public boolean showPass(boolean count){
-        if (count) {
-            edtPass.setTransformationMethod(PasswordTransformationMethod.getInstance());
-            imgEye.setImageResource(R.drawable.ic_eye_pass);
-        } else {
-            edtPass.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-            imgEye.setImageResource(R.drawable.ic_eye_hide);
-        }
-        count = !count;
-        edtPass.setSelection(edtPass.getText().length());
-        return count;
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    @Override
-    public void onClick(View view) {
-
+    private void navigateHomeScreen() {
+        startActivity(new Intent(this, HomeActivity.class));
     }
+
+    private void navigateRegisterScreen() {
+        startActivity(new Intent(this, RegisterActivity.class));
+    }
+
 }

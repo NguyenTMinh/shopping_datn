@@ -10,15 +10,18 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 
@@ -32,8 +35,16 @@ import poly.manhnt.datn_md09.Adapters.NoiBatAdapter;
 import poly.manhnt.datn_md09.Adapters.ViewPagerAdapter;
 import poly.manhnt.datn_md09.Models.Objects.ILoadMore;
 import poly.manhnt.datn_md09.Models.Objects.LoaiSanPham;
+import poly.manhnt.datn_md09.Models.ProductResponse;
 import poly.manhnt.datn_md09.Presenters.HomePresenter.MenuPresenter.MenuPresenter;
 import poly.manhnt.datn_md09.R;
+import poly.manhnt.datn_md09.Views.CartScreen.CartActivity;
+import poly.manhnt.datn_md09.Views.DetailScreen.DetailActivity;
+import poly.manhnt.datn_md09.api.ApiService;
+import poly.manhnt.datn_md09.api.RetrofitClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -47,7 +58,13 @@ public class HomeActivity extends AppCompatActivity {
     NestedScrollView scrollView;
     RecyclerView recyclerView;
     NoiBatAdapter noiBatAdapter;
+
+    private List<ProductResponse> productResponseList;
     private Handler handler = new Handler(Looper.getMainLooper());
+    View.OnClickListener itemClickListener = (view) -> {
+        startActivity(new Intent(HomeActivity.this, DetailActivity.class));
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,19 +76,19 @@ public class HomeActivity extends AppCompatActivity {
         expandableListView = findViewById(R.id.epMenu);
         scrollView = findViewById(R.id.nestedScrollHome);
         recyclerView = findViewById(R.id.recyclerNoiBat);
+        productResponseList = new ArrayList<>();
 
-        List<String> list = new ArrayList<>();
-        for(int i=0; i<20; i++){
-            String ten = "Phụ kiện [Ghế xoay văn phòng] (kiểm tra mẫu trước khi đặt hàng với shop)"+ i;
-            list.add(ten);
-        };
+        //TODO: MinhNTn fake data
+        fakeDataProduct();
 
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
-        noiBatAdapter = new NoiBatAdapter(this, list);
+        noiBatAdapter = new NoiBatAdapter(this, productResponseList);
+        noiBatAdapter.setOnItemClickListener(itemClickListener);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(noiBatAdapter);
         recyclerView.addOnScrollListener(new ILoadMore(layoutManager));
-        noiBatAdapter.notifyDataSetChanged();
+
+        initData();
 
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerToggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.blue1));
@@ -117,6 +134,21 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    private void initData() {
+        RetrofitClient.getInstance().create(ApiService.class).getListProduct().enqueue(new Callback<List<ProductResponse>>() {
+            @Override
+            public void onResponse(Call<List<ProductResponse>> call, Response<List<ProductResponse>> response) {
+                if(response.isSuccessful()){
+                    noiBatAdapter.updateData(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ProductResponse>> call, Throwable t) {
+
+            }
+        });
+    }
 
 
     @Override
@@ -129,7 +161,12 @@ public class HomeActivity extends AppCompatActivity {
         if(drawerToggle.onOptionsItemSelected(item)){
             return true;
         }
-        return true ;
+
+        if (item.getItemId() == R.id.itCart) {
+            startActivity(new Intent(HomeActivity.this, CartActivity.class));
+        }
+
+        return super.onOptionsItemSelected(item);
     }
     private void startAutoScroll() {
         handler.postDelayed(new Runnable() {
@@ -145,4 +182,17 @@ public class HomeActivity extends AppCompatActivity {
         }, 3000);
     }
 
+    //TODO: MinhNTn fake data
+    private void fakeDataProduct() {
+        for (int i = 0; i < 10; i++) {
+            ProductResponse productResponse = new ProductResponse();
+            productResponse.description = "Description " + i;
+            productResponse.image = new ArrayList<>();
+            productResponse.image.add("https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__340.jpg");
+            productResponse.image.add("https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__340.jpg");
+            productResponse.image.add("https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__340.jpg");
+            productResponse.price = 1000;
+            productResponseList.add(productResponse);
+        }
+    }
 }

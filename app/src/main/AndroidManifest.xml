@@ -10,7 +10,6 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DATN_MD09"
         android:usesCleartextTraffic="true"
@@ -40,7 +39,7 @@
             android:name=".Views.HomeScreen.HomeActivity"
             android:exported="false" />
         <activity
-            android:name=".Views.PlashScreen.PlashAcivity"
+            android:name=".Views.splash_screen.SplashActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>

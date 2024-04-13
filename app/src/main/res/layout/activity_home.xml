@@ -53,14 +53,14 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/bgsearch">
-                <Button
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:drawableLeft="@drawable/ic_search"
                     android:text="Tìm kiếm trên FModel"
                     android:textSize="12dp"
                     android:textColor="@color/blue2"
-                    android:textAlignment="textStart"
+                    android:gravity="center_vertical"
                     android:textAllCaps="false"
                     android:paddingLeft="10dp"
                     android:layout_weight="1"
@@ -108,7 +108,7 @@
                 android:layout_height="wrap_content"
                 android:text="Acount"
                 android:textSize="12dp"
-                android:drawableTop="@drawable/ic_persion"/>
+                android:drawableTop="@drawable/ic_person"/>
 
         </FrameLayout>
     </FrameLayout>

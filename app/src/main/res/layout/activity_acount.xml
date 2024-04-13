@@ -302,7 +302,7 @@
             android:layout_height="wrap_content"
             android:text="Acount"
             android:textSize="12dp"
-            android:drawableTop="@drawable/ic_persion"/>
+            android:drawableTop="@drawable/ic_person"/>
     </FrameLayout>
 
 </FrameLayout>

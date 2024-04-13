@@ -25,18 +25,12 @@ public class FragNoiBat extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_noibat, container, false);
-        recyclerView = view.findViewById(R.id.recyclerNoiBat);
-        List<String> list = new ArrayList<>();
-        for(int i=0; i<20; i++){
-            String ten = "Phụ kiện [Ghế xoay văn phòng] (kiểm tra mẫu trước khi đặt hàng với shop)"+ i;
-            list.add(ten);
-        };
-//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false );
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
-        noiBatAdapter = new NoiBatAdapter(getActivity(), list);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(noiBatAdapter);
-        noiBatAdapter.notifyDataSetChanged();
+//        recyclerView = view.findViewById(R.id.recyclerNoiBat);
+//        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
+//        noiBatAdapter = new NoiBatAdapter(getActivity(), list);
+//        recyclerView.setLayoutManager(layoutManager);
+//        recyclerView.setAdapter(noiBatAdapter);
+//        noiBatAdapter.notifyDataSetChanged();
         return view;
     }
 }

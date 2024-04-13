@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,24 +12,46 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
+import poly.manhnt.datn_md09.Models.ProductResponse;
 import poly.manhnt.datn_md09.R;
 
 
 public class NoiBatAdapter extends RecyclerView.Adapter<NoiBatAdapter.ViewHolder> {
     Context context;
-    List<String> stringList;
-    public NoiBatAdapter(Context context, List<String> stringList){
+    List<ProductResponse> list;
+    View.OnClickListener onItemClickListener;
+
+    public NoiBatAdapter(Context context, List<ProductResponse> list){
         this.context = context;
-        this.stringList = stringList;
+        this.list = list;
     }
+
+    public void updateData(List<ProductResponse> list) {
+        this.list = list;
+        notifyDataSetChanged();
+    }
+
+    public void setOnItemClickListener(View.OnClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
         CardView cardView;
+
+        TextView tvPrice;
+        ImageView imvBackground;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.txtTieuDeNoiBat);
+            tvPrice = itemView.findViewById(R.id.tvPrice);
+            imvBackground = itemView.findViewById(R.id.imvBackground);
+
+            itemView.setOnClickListener(onItemClickListener);
         }
     }
     @NonNull
@@ -42,11 +65,14 @@ public class NoiBatAdapter extends RecyclerView.Adapter<NoiBatAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            holder.textView.setText(stringList.get(position));
+        ProductResponse productResponse = list.get(position);
+        holder.textView.setText(productResponse.description);
+        Glide.with(context).load(productResponse.image.get(0)).placeholder(R.drawable.backgroundplashscreen).error(R.drawable.backgroundplashscreen).into(holder.imvBackground);
+        holder.tvPrice.setText(productResponse.price+"$");
     }
 
     @Override
     public int getItemCount() {
-        return stringList.size();
+        return list.size();
     }
 }
