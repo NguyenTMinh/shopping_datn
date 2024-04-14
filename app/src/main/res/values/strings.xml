@@ -6,5 +6,6 @@
     <string name="fb_login_protocol_scheme">fb1897289204022516</string>
     <string name="facebook_client_token">56789</string>
     <string name="login">Login</string>
+    <string name="shirt_menu">Danh sách áo</string>
 
 </resources>
